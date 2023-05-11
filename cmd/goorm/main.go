@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 
-	goorm "github.com/einsier/go-orm"
+	"github.com/einsier/go-orm"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	e, _ := goorm.NewEngine("sqlite3", "sample.db")
+	e, _ := orm.NewEngine("sqlite3", "sample.db")
 	defer e.Close()
 
 	s := e.NewSession()

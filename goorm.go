@@ -1,14 +1,16 @@
-package goorm
+package orm
 
 import (
 	"database/sql"
 
+	"github.com/einsier/go-orm/dialect"
 	"github.com/einsier/go-orm/llog"
 	"github.com/einsier/go-orm/session"
 )
 
 type Engine struct {
-	db *sql.DB
+	db      *sql.DB
+	dialect dialect.Dialect
 }
 
 // NewEngine create a instance of Engine, which connect to the database
@@ -24,8 +26,14 @@ func NewEngine(driver, source string) (e *Engine, err error) {
 		llog.Error(err)
 		return
 	}
+	// make sure the specified dialect exists
+	d, ok := dialect.GetDialect(driver)
+	if !ok {
+		llog.Errorf("dialect %s Not Found", driver)
+		return
+	}
 
-	e = &Engine{db: db}
+	e = &Engine{db: db, dialect: d}
 	llog.Info("Connect database success")
 	return
 }
@@ -40,5 +48,5 @@ func (e *Engine) Close() {
 
 // NewSession create a instance of Session
 func (e *Engine) NewSession() *session.Session {
-	return session.New(e.db)
+	return session.New(e.db, e.dialect)
 }
