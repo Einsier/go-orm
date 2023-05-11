@@ -1,7 +1,7 @@
 package llog
 
 import (
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"sync"
@@ -22,8 +22,8 @@ var (
 )
 
 const (
-	ErrorLevel = iota
-	InfoLevel
+	InfoLevel = iota
+	ErrorLevel
 	Disabled
 )
 
@@ -36,10 +36,10 @@ func SetLevel(level int) {
 	}
 
 	if level > ErrorLevel {
-		errorLog.SetOutput(ioutil.Discard)
+		errorLog.SetOutput(io.Discard)
 	}
 
 	if level > InfoLevel {
-		infoLog.SetOutput(ioutil.Discard)
+		infoLog.SetOutput(io.Discard)
 	}
 }
