@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"strings"
 
+	"github.com/einsier/go-orm/clause"
 	"github.com/einsier/go-orm/dialect"
 	"github.com/einsier/go-orm/llog"
 	"github.com/einsier/go-orm/schema"
@@ -14,6 +15,7 @@ type Session struct {
 	db       *sql.DB
 	dialect  dialect.Dialect
 	refTable *schema.Schema
+	clause   clause.Clause
 	// sql and sqlVars are used to store the sql statement and its variables.
 	sql     strings.Builder
 	sqlVars []interface{}
@@ -29,6 +31,7 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 func (s *Session) Clear() {
 	s.sql.Reset()
 	s.sqlVars = nil
+	s.clause = clause.Clause{}
 }
 
 func (s *Session) DB() *sql.DB {
