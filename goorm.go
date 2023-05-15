@@ -50,3 +50,32 @@ func (e *Engine) Close() {
 func (e *Engine) NewSession() *session.Session {
 	return session.New(e.db, e.dialect)
 }
+
+// TxFunc defines the function type that can be executed in a transaction.
+type TxFunc func(*session.Session) (interface{}, error)
+
+// Transaction executes a function in a transaction.
+func (e *Engine) Transaction(f TxFunc) (res interface{}, err error) {
+	s := e.NewSession()
+	if err = s.Begin(); err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			s.Rollback()
+			panic(p)
+		} else if err != nil {
+			s.Rollback()
+		} else {
+			defer func() {
+				if err != nil {
+					s.Rollback()
+				}
+			}()
+			err = s.Commit() // err is nil; if Commit returns error update err
+		}
+	}()
+
+	return f(s)
+}

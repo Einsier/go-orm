@@ -13,6 +13,7 @@ import (
 // Session keep a pointer to sql.DB and provides all execution of all
 type Session struct {
 	db       *sql.DB
+	tx       *sql.Tx // transaction
 	dialect  dialect.Dialect
 	refTable *schema.Schema
 	clause   clause.Clause
@@ -20,6 +21,15 @@ type Session struct {
 	sql     strings.Builder
 	sqlVars []interface{}
 }
+
+type CommonDB interface {
+	Query(query string, args ...interface{}) (*sql.Rows, error)
+	QueryRow(query string, args ...interface{}) *sql.Row
+	Exec(query string, args ...interface{}) (sql.Result, error)
+}
+
+var _ CommonDB = (*sql.DB)(nil)
+var _ CommonDB = (*sql.Tx)(nil)
 
 func New(db *sql.DB, dialect dialect.Dialect) *Session {
 	return &Session{
@@ -34,7 +44,10 @@ func (s *Session) Clear() {
 	s.clause = clause.Clause{}
 }
 
-func (s *Session) DB() *sql.DB {
+func (s *Session) DB() CommonDB {
+	if s.tx != nil {
+		return s.tx
+	}
 	return s.db
 }
 
