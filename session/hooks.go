@@ -44,6 +44,7 @@ type AfterDeleteInterface interface {
 	AfterDelete(s *Session) error
 }
 
+// CallMethod calls hooks registered in the session
 func (s *Session) CallMethod(method string, value interface{}) {
 	switch method {
 	case BeforeQuery:

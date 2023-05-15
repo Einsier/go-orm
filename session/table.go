@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/einsier/go-orm/llog"
+	"github.com/einsier/go-orm/logger"
 	"github.com/einsier/go-orm/schema"
 )
 
@@ -21,7 +21,7 @@ func (s *Session) Model(value interface{}) *Session {
 // RefTable return the Schema of the model
 func (s *Session) RefTable() *schema.Schema {
 	if s.refTable == nil {
-		llog.Error("Model is not set")
+		logger.Error("Model is not set")
 	}
 	return s.refTable
 }

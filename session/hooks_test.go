@@ -3,7 +3,7 @@ package session
 import (
 	"testing"
 
-	"github.com/einsier/go-orm/llog"
+	"github.com/einsier/go-orm/logger"
 )
 
 type Account struct {
@@ -12,22 +12,22 @@ type Account struct {
 }
 
 func (account *Account) BeforeInsert(s *Session) error {
-	llog.Info("before inert", account)
+	logger.Info("before inert", account)
 	account.ID += 1000
 	return nil
 }
 
 func (account *Account) AfterQuery(s *Session) error {
-	llog.Info("after query", account)
+	logger.Info("after query", account)
 	account.Password = "******"
 	return nil
 }
 
 func TestSession_CallMethod(t *testing.T) {
 	s := NewSession().Model(&Account{})
-	_ = s.DropTable()
-	_ = s.CreateTable()
-	_, _ = s.Insert(&Account{1, "123456"}, &Account{2, "qwerty"})
+	s.DropTable()
+	s.CreateTable()
+	s.Insert(&Account{1, "123456"}, &Account{2, "qwerty"})
 
 	u := &Account{}
 

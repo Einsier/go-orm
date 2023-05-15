@@ -49,7 +49,7 @@ func TestSession_Update(t *testing.T) {
 	s := testRecordInit(t)
 	affected, _ := s.Where("Name = ?", "Tom").Update("Age", 30)
 	u := &User{}
-	_ = s.OrderBy("Age DESC").First(u)
+	s.OrderBy("Age DESC").First(u)
 
 	if affected != 1 || u.Age != 30 {
 		t.Fatal("failed to update")
